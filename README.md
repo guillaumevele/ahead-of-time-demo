@@ -1,5 +1,7 @@
 # ahead-of-time-demo
 
+[![ci](https://github.com/guillaumevele/ahead-of-time-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/guillaumevele/ahead-of-time-demo/actions/workflows/ci.yml)
+
 A small forecast-then-prescribe loop on the stack of the Mistral x ClickHouse "Ahead of
 Time" hackathon, built before the event to learn where it breaks:
 
@@ -170,9 +172,6 @@ Not run:
 - **No human has approved a proposal through the CLI.** The one real proposal is still
   pending. The approve, reject, receipt and dry-run paths are covered by tests that call the
   same functions; the interactive prompt itself was not used.
-- **The CI workflow has never run.** `.github/workflows/ci.yml` is written (locked install,
-  tests, backtest replay with `--check`) but the repository is not on GitHub yet. The 1%
-  tolerance of `--check` across CPU architectures is a guess until it runs on Linux.
 - ClickHouse runs embedded through chDB (ClickHouse engine 26.11 in-process). Nothing was
   tested against a ClickHouse server or ClickHouse Cloud.
 - Only the 123M checkpoint was run, not the 209M one.
@@ -190,8 +189,9 @@ Known limits of the backtest:
 - series B is one sensor with 74 missing hours; outages look like demand changes;
 - real-time eCO2mix values are provisional and may be revised by RTE;
 - the q10-q90 interval covers 75.1% of hours on series A, a little narrow;
-- until this repository is pushed, the commit order above rests on local git history, which
-  its author could rewrite.
+- the commits above were all made locally on 2026-11-19 and pushed together afterwards.
+  Their order rests on git history written by the author; no third party timestamped
+  `PREREG.md` before the results existed.
 
 Run on 2026-11-19, on one laptop:
 
@@ -206,6 +206,10 @@ Run on 2026-11-19, on one laptop:
   `propose` without Langfuse keys or `--allow-untraced` refused;
 - the test suite (`uv run pytest`): 21 tests, no network, Timestral and Mistral
   replaced by stubs, agent-proof-kit called for real;
+- after publication, the CI workflow ran once on GitHub (ubuntu-latest, x86-64): 21 tests
+  passed and the backtest replay printed the same relative MAE figures and intervals as
+  above, within the 1% tolerance of `--check`
+  ([run 44529363665](https://github.com/guillaumevele/ahead-of-time-demo/actions/runs/44529363665));
 - two mutation checks on `execute`: with the `agent-proof` gate call removed, 2 tests go
   red; with the status check removed, 1 test goes red. The first time the status check was
   removed, no test failed: the gate caught every case except a second execution of an
