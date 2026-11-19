@@ -1,0 +1,7 @@
+{
+  "name": "ahead-of-time-demo-gates",
+  "private": true,
+  "description": "Pins the agent-proof-kit CLI used as the approval gate.",
+  "engines": { "node": ">=22" },
+  "devDependencies": { "agent-proof-kit": "0.7.0" }
+}

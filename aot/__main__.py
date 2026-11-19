@@ -45,7 +45,10 @@ def main() -> int:
             print(json.dumps(proposal, indent=2))
             operator = input("Operator name: ")
             typed = input(f"Type '{approval.confirmation_phrase(args.id)}' to approve, anything else rejects: ")
-            print(approval.decide(store, args.id, operator, typed))
+            decision = approval.decide(store, args.id, operator, typed)
+            print(decision)
+            if decision == "approved":
+                print(f"receipt: receipts/{args.id}/attestation.json")
         elif args.cmd == "execute":
             try:
                 print(approval.execute(store, args.id))
