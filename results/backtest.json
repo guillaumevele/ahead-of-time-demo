@@ -1,8 +1,4 @@
 {
-  "data_sha256": "fcf9d14fd925010f2eb78ee73bc77dae3c876e36246c19aac033e63287611c80",
-  "raw_rows": 7580,
-  "hourly_points": 1896,
-  "missing_hours": 1,
   "model": "mistralai/Timestral-123M",
   "model_revision": "5a147287addda85f6acd8da3fb8858fe9af7e8f7",
   "versions": {
@@ -12,29 +8,138 @@
   },
   "first_origin": "2026-10-16 00:00:00+00:00",
   "last_origin": "2026-11-18 00:00:00+00:00",
-  "windows": 34,
-  "scored_hours": 815,
-  "results": {
-    "timestral": {
-      "mae_mw": 1213.926092791411,
-      "mase": 0.7216504391625328,
-      "wql": 0.016758855107352203
+  "bootstrap": {
+    "resamples": 10000,
+    "seed": 20261119
+  },
+  "series": {
+    "fr_load": {
+      "file": "data/eco2mix_national_tr_snapshot.csv",
+      "sha256": "fcf9d14fd925010f2eb78ee73bc77dae3c876e36246c19aac033e63287611c80",
+      "raw_rows": 7580,
+      "hourly_points": 1896,
+      "missing_hours": 1,
+      "windows": 34,
+      "scored_hours": 815,
+      "results": {
+        "timestral": {
+          "mae": 1213.926092791411,
+          "mase": 0.7216504391625328,
+          "wql": 0.016758855107352203,
+          "window_mae_quartiles": [
+            679.9914957682291,
+            1051.24755859375,
+            1568.4950358072917
+          ]
+        },
+        "naive_week": {
+          "mae": 3939.7990797546013,
+          "mase": 2.3497238292321465,
+          "wql": 0.07698949027635622,
+          "window_mae_quartiles": [
+            1699.015625,
+            3064.8697916666665,
+            6073.135416666666
+          ]
+        },
+        "naive_day": {
+          "mae": 2831.885582822086,
+          "mase": 1.6752108658868698,
+          "wql": 0.05533922495256142,
+          "window_mae_quartiles": [
+            1156.9010416666667,
+            2389.213541666667,
+            3900.7890625
+          ]
+        }
+      },
+      "relative_mae": {
+        "naive_week": {
+          "point": 0.3081187817494041,
+          "ci95": [
+            0.23474086650533188,
+            0.3981402632225279
+          ]
+        },
+        "naive_day": {
+          "point": 0.4286635378755966,
+          "ci95": [
+            0.34465274949356994,
+            0.5278785706372738
+          ]
+        }
+      },
+      "verdict": "Timestral better",
+      "coverage_q10_q90": 0.750920245398773,
+      "windows_won_by_timestral": {
+        "naive_week": 31,
+        "naive_day": 30
+      },
+      "timestral_seconds": 11.8
     },
-    "naive_week": {
-      "mae_mw": 3939.7990797546013,
-      "mase": 2.3497238292321465,
-      "wql": 0.07698949027635622
-    },
-    "naive_day": {
-      "mae_mw": 2831.885582822086,
-      "mase": 1.6752108658868698,
-      "wql": 0.05533922495256142
+    "paris_bike": {
+      "file": "data/paris_bike_sebastopol_sn_snapshot.csv",
+      "sha256": "f863290857115aece9309ae0447ae32ec59667c4a64bbe7dabb69a5bc4ee7c66",
+      "raw_rows": 1822,
+      "hourly_points": 1896,
+      "missing_hours": 74,
+      "windows": 34,
+      "scored_hours": 790,
+      "results": {
+        "timestral": {
+          "mae": 71.9707458689243,
+          "mase": 0.8949756214736795,
+          "wql": 0.13075167036911395,
+          "window_mae_quartiles": [
+            41.15298366546631,
+            52.19927151997884,
+            79.31933514277141
+          ]
+        },
+        "naive_week": {
+          "mae": 101.63417721518988,
+          "mase": 1.251961724605781,
+          "wql": 0.25752701450074894,
+          "window_mae_quartiles": [
+            47.260416666666664,
+            96.9375,
+            137.53125
+          ]
+        },
+        "naive_day": {
+          "mae": 114.03164556962025,
+          "mase": 1.4039394542457166,
+          "wql": 0.28894049272396616,
+          "window_mae_quartiles": [
+            54.21875,
+            100.43115942028986,
+            158.66003787878788
+          ]
+        }
+      },
+      "relative_mae": {
+        "naive_week": {
+          "point": 0.7081352733986399,
+          "ci95": [
+            0.5791580001631446,
+            0.8404729686088681
+          ]
+        },
+        "naive_day": {
+          "point": 0.6311471303374613,
+          "ci95": [
+            0.5141707688493702,
+            0.7616465551488755
+          ]
+        }
+      },
+      "verdict": "Timestral better",
+      "coverage_q10_q90": 0.8164556962025317,
+      "windows_won_by_timestral": {
+        "naive_week": 25,
+        "naive_day": 26
+      },
+      "timestral_seconds": 5.6
     }
-  },
-  "coverage_q10_q90": 0.750920245398773,
-  "windows_won_by_timestral": {
-    "naive_week": 31,
-    "naive_day": 30
-  },
-  "timestral_seconds_total": 77.2
+  }
 }

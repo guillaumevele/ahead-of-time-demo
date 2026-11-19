@@ -78,7 +78,7 @@ class Store:
                 SELECT toStartOfHour(ts) AS h, toNullable(avg(value)) AS v
                 FROM aot.raw WHERE series = '{name}' GROUP BY h HAVING count() = {per_hour}
             ) ORDER BY h WITH FILL
-                FROM toDateTime64('{GRID_START}', 0, 'UTC') TO toDateTime64('{GRID_END}', 0, 'UTC')
+                FROM toDateTime('{GRID_START}', 'UTC') TO toDateTime('{GRID_END}', 'UTC')
                 STEP toIntervalHour(1)
             """,
             "DataFrame",
