@@ -15,7 +15,7 @@ Time" hackathon, built before the event to learn where it breaks:
    the model cannot have seen.
 
 It is one day of work. Read [What was not run / known limits](#what-was-not-run--known-limits)
-before trusting anything here: in particular, no trace has reached a Langfuse server yet.
+before trusting anything here.
 
 ## Backtest
 
@@ -160,22 +160,37 @@ append a forged `human:` approval, and an unsigned receipt proves integrity, not
 one `guardrail`. The trace id is stored with the proposal. If the Langfuse keys are missing,
 `propose` refuses to run unless `--allow-untraced` is passed.
 
+One real run was traced to Langfuse Cloud (EU) on 2026-11-19, then read back through the
+Langfuse API. The five observations, as returned by `GET /api/public/v2/observations`:
+
+| Type | Name | Parent | Duration (s) |
+|---|---|---|---|
+| AGENT | `prescribe-flexible-load` | (root) | 255.7 |
+| TOOL | `clickhouse.hourly_load` | `prescribe-flexible-load` | 0.5 |
+| TOOL | `timestral.forecast` | `prescribe-flexible-load` | 35.0 |
+| GENERATION | `mistral.chat` (`mistral-large-4`, 686 tokens in, 3694 out) | `prescribe-flexible-load` | 218.2 |
+| GUARDRAIL | `validate-proposal` | `prescribe-flexible-load` | 0.2 |
+
+The full export, with inputs and outputs, is in
+[`docs/langfuse-trace.json`](docs/langfuse-trace.json), produced by
+`scripts/export_trace.py <trace_id>`. The script drops the project id, the observation ids
+and the SDK metadata; nothing else was edited. The durations are those of a laptop that was
+heavily loaded by unrelated work at the time, and say nothing about the stack.
+
 ## What was not run / known limits
 
 Not run:
 
-- **No trace has been sent to a Langfuse server, and none is shown here.** No Langfuse
-  project was available on the machine. The instrumentation is exercised in a test with the
-  real Langfuse SDK and an in-memory span exporter: this shows the five observations are
-  emitted, not that they display correctly in Langfuse. This is the main gap against the
-  hackathon rules.
-- **No human has approved a proposal through the CLI.** The one real proposal is still
+- **The trace was checked through the API, not in the Langfuse interface.** No screenshot
+  is shown, and nobody looked at how the run renders in the UI. Only one run was traced;
+  the first real run, earlier the same day, was made with `--allow-untraced`.
+- **No human has approved a proposal through the CLI.** The two real proposals are still
   pending. The approve, reject, receipt and dry-run paths are covered by tests that call the
   same functions; the interactive prompt itself was not used.
 - ClickHouse runs embedded through chDB (ClickHouse engine 26.11 in-process). Nothing was
   tested against a ClickHouse server or ClickHouse Cloud.
 - Only the 123M checkpoint was run, not the 209M one.
-- The agent produced one proposal. There is no evaluation of how often Mistral Large picks a
+- The agent produced two proposals, from the same forecast. There is no evaluation of how often Mistral Large picks a
   good window, and no prompt iteration.
 
 Known limits of the backtest:
@@ -204,6 +219,10 @@ Run on 2026-11-19, on one laptop:
   code (a sampling parameter the API rejected, then chunked message content) and wrote nothing;
 - on that pending proposal: `execute` refused, `review` without a terminal refused, and
   `propose` without Langfuse keys or `--allow-untraced` refused;
+- a second agent run, without `--allow-untraced`, traced to Langfuse Cloud (trace
+  `9b284fe8310969eb1180151e81f6975a`, see [Tracing](#tracing)). Same proposed window. The
+  trace content was searched for names, paths, e-mail addresses and host identifiers before
+  export: none found;
 - the test suite (`uv run pytest`): 21 tests, no network, Timestral and Mistral
   replaced by stubs, agent-proof-kit called for real;
 - after publication, the CI workflow ran once on GitHub (ubuntu-latest, x86-64): 21 tests

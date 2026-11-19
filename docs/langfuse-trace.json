@@ -1,0 +1,77 @@
+{
+  "source": "Langfuse Cloud (EU), GET /api/public/v2/observations",
+  "redacted": [
+    "project id",
+    "observation ids",
+    "SDK metadata"
+  ],
+  "trace_id": "9b284fe8310969eb1180151e81f6975a",
+  "observations": [
+    {
+      "type": "AGENT",
+      "name": "prescribe-flexible-load",
+      "startTime": "2026-11-19T13:46:44.171Z",
+      "endTime": "2026-11-19T13:50:59.831Z",
+      "latency": 255.66,
+      "level": "DEFAULT",
+      "environment": "default",
+      "input": "{\"action_id\": \"29d935c0\"}",
+      "output": "{\"id\": \"29d935c0\", \"status\": \"proposed\", \"action\": \"schedule_flexible_load\", \"start_utc\": \"2026-11-19T01:00Z\", \"end_utc\": \"2026-11-19T05:00Z\", \"rationale\": \"Starting at 01:00 UTC captures the four lowest-demand hours (01:00\\u201304:00) with a combined median of 182,601 MW, the minimum among all possible 4-hour windows. Although forecast uncertainty exists (q10\\u2013q90 range of 179,526\\u2013185,891 MW), this window remains optimal across all quantiles.\", \"confidence\": \"high\", \"window_mean_median_mw\": 45650, \"reference_start_utc\": \"2026-11-19T01:00Z\", \"excess_vs_reference_mw\": 0, \"llm_model\": \"mistral-large-4\", \"forecast_model\": \"mistralai/Timestral-123M\", \"trace_id\": \"9b284fe8310969eb1180151e81f6975a\"}",
+      "parent": null
+    },
+    {
+      "type": "TOOL",
+      "name": "clickhouse.hourly_load",
+      "startTime": "2026-11-19T13:46:44.178Z",
+      "endTime": "2026-11-19T13:46:44.647Z",
+      "latency": 0.469,
+      "level": "DEFAULT",
+      "environment": "default",
+      "input": null,
+      "output": "{\"points\": 1896, \"last_hour\": \"2026-11-18 23:00:00+00:00\"}",
+      "parent": "prescribe-flexible-load"
+    },
+    {
+      "type": "TOOL",
+      "name": "timestral.forecast",
+      "startTime": "2026-11-19T13:46:44.647Z",
+      "endTime": "2026-11-19T13:47:19.613Z",
+      "latency": 34.966,
+      "level": "DEFAULT",
+      "environment": "default",
+      "input": "{\"model\": \"mistralai/Timestral-123M\", \"horizon\": 24}",
+      "output": "[{\"hour_utc\": \"2026-11-19T00:00Z\", \"q10\": 48745, \"median\": 49115, \"q90\": 49466}, {\"hour_utc\": \"2026-11-19T01:00Z\", \"q10\": 46822, \"median\": 47367, \"q90\": 47941}, {\"hour_utc\": \"2026-11-19T02:00Z\", \"q10\": 44139, \"median\": 44848, \"q90\": 45612}, {\"hour_utc\": \"2026-11-19T03:00Z\", \"q10\": 43390, \"median\": 44234, \"q90\": 45132}, {\"hour_utc\": \"2026-11-19T04:00Z\", \"q10\": 45175, \"median\": 46152, \"q90\": 47206}, {\"hour_utc\": \"2026-11-19T05:00Z\", \"q10\": 49367, \"median\": 50599, \"q90\": 51900}, {\"hour_utc\": \"2026-11-19T06:00Z\", \"q10\": 54269, \"median\": 55707, \"q90\": 57120}, {\"hour_utc\": \"2026-11-19T07:00Z\", \"q10\": 56797, \"median\": 58313, \"q90\": 59743}, {\"hour_utc\": \"2026-11-19T08:00Z\", \"q10\": 57421, \"median\": 58966, \"q90\": 60547}, {\"hour_utc\": \"2026-11-19T09:00Z\", \"q10\": 56893, \"median\": 58558, \"q90\": 60245}, {\"hour_utc\": \"2026-11-19T10:00Z\", \"q10\": 56598, \"median\": 58276, \"q90\": 60010}, {\"hour_utc\": \"2026-11-19T11:00Z\", \"q10\": 57107, \"median\": 58884, \"q90\": 60673}, {\"hour_utc\": \"2026-11-19T12:00Z\", \"q10\": 55783, \"median\": 57590, \"q90\": 59493}, {\"hour_utc\": \"2026-11-19T13:00Z\", \"q10\": 55306, \"median\": 57190, \"q90\": 59191}, {\"hour_utc\": \"2026-11-19T14:00Z\", \"q10\": 54260, \"median\": 56199, \"q90\": 58269}, {\"hour_utc\": \"2026-11-19T15:00Z\", \"q10\": 52846, \"median\": 54740, \"q90\": 56937}, {\"hour_utc\": \"2026-11-19T16:00Z\", \"q10\": 53854, \"median\": 55792, \"q90\": 57940}, {\"hour_utc\": \"2026-11-19T17:00Z\", \"q10\": 56849, \"median\": 58932, \"q90\": 61008}, {\"hour_utc\": \"2026-11-19T18:00Z\", \"q10\": 58111, \"median\": 60107, \"q90\": 62121}, {\"hour_utc\": \"2026-11-19T19:00Z\", \"q10\": 55071, \"median\": 57074, \"q90\": 59155}, {\"hour_utc\": \"2026-11-19T20:00Z\", \"q10\": 51954, \"median\": 53820, \"q90\": 55903}, {\"hour_utc\": \"2026-11-19T21:00Z\", \"q10\": 50900, \"median\": 52678, \"q90\": 54652}, {\"hour_utc\": \"2026-11-19T22:00Z\", \"q10\": 50950, \"median\": 52738, \"q90\": 54731}, {\"hour_utc\": \"2026-11-19T23:00Z\", \"q10\": 49658, \"median\": 51435, \"q90\": 53387}]",
+      "parent": "prescribe-flexible-load"
+    },
+    {
+      "type": "GENERATION",
+      "name": "mistral.chat",
+      "startTime": "2026-11-19T13:47:19.623Z",
+      "endTime": "2026-11-19T13:50:57.852Z",
+      "latency": 218.229,
+      "level": "DEFAULT",
+      "environment": "default",
+      "input": "[{\"role\": \"system\", \"content\": \"You advise the operator of one flexible electrical load that must run for exactly 4 consecutive hours within the next 24 hours. The goal is to run it when French national electricity demand is forecast to be lowest. You receive a probabilistic hourly forecast (q10, median, q90, in MW). Propose one start hour. You cannot execute anything: a human operator reviews your proposal. Answer with a single JSON object with keys \\\"start_utc\\\" (ISO 8601, one of the listed hours), \\\"rationale\\\" (two sentences at most, mention the uncertainty), \\\"confidence\\\" (\\\"low\\\", \\\"medium\\\" or \\\"high\\\").\"}, {\"role\": \"user\", \"content\": \"Forecast:\\nhour_utc,q10,median,q90\\n2026-11-19T00:00Z,48745,49115,49466\\n2026-11-19T01:00Z,46822,47367,47941\\n2026-11-19T02:00Z,44139,44848,45612\\n2026-11-19T03:00Z,43390,44234,45132\\n2026-11-19T04:00Z,45175,46152,47206\\n2026-11-19T05:00Z,49367,50599,51900\\n2026-11-19T06:00Z,54269,55707,57120\\n2026-11-19T07:00Z,56797,58313,59743\\n2026-11-19T08:00Z,57421,58966,60547\\n2026-11-19T09:00Z,56893,58558,60245\\n2026-11-19T10:00Z,56598,58276,60010\\n2026-11-19T11:00Z,57107,58884,60673\\n2026-11-19T12:00Z,55783,57590,59493\\n2026-11-19T13:00Z,55306,57190,59191\\n2026-11-19T14:00Z,54260,56199,58269\\n2026-11-19T15:00Z,52846,54740,56937\\n2026-11-19T16:00Z,53854,55792,57940\\n2026-11-19T17:00Z,56849,58932,61008\\n2026-11-19T18:00Z,58111,60107,62121\\n2026-11-19T19:00Z,55071,57074,59155\\n2026-11-19T20:00Z,51954,53820,55903\\n2026-11-19T21:00Z,50900,52678,54652\\n2026-11-19T22:00Z,50950,52738,54731\\n2026-11-19T23:00Z,49658,51435,53387\\n\"}]",
+      "output": "{\n  \"start_utc\": \"2026-11-19T01:00Z\",\n  \"rationale\": \"Starting at 01:00 UTC captures the four lowest-demand hours (01:00–04:00) with a combined median of 182,601 MW, the minimum among all possible 4-hour windows. Although forecast uncertainty exists (q10–q90 range of 179,526–185,891 MW), this window remains optimal across all quantiles.\",\n  \"confidence\": \"high\"\n}",
+      "parent": "prescribe-flexible-load",
+      "model": "mistral-large-4",
+      "usage": {
+        "input": 686,
+        "output": 3694,
+        "total": 4380
+      }
+    },
+    {
+      "type": "GUARDRAIL",
+      "name": "validate-proposal",
+      "startTime": "2026-11-19T13:50:57.855Z",
+      "endTime": "2026-11-19T13:50:58.087Z",
+      "latency": 0.232,
+      "level": "DEFAULT",
+      "environment": "default",
+      "input": "{\n  \"start_utc\": \"2026-11-19T01:00Z\",\n  \"rationale\": \"Starting at 01:00 UTC captures the four lowest-demand hours (01:00–04:00) with a combined median of 182,601 MW, the minimum among all possible 4-hour windows. Although forecast uncertainty exists (q10–q90 range of 179,526–185,891 MW), this window remains optimal across all quantiles.\",\n  \"confidence\": \"high\"\n}",
+      "output": "{\"action\": \"schedule_flexible_load\", \"start_utc\": \"2026-11-19T01:00Z\", \"end_utc\": \"2026-11-19T05:00Z\", \"rationale\": \"Starting at 01:00 UTC captures the four lowest-demand hours (01:00\\u201304:00) with a combined median of 182,601 MW, the minimum among all possible 4-hour windows. Although forecast uncertainty exists (q10\\u2013q90 range of 179,526\\u2013185,891 MW), this window remains optimal across all quantiles.\", \"confidence\": \"high\", \"window_mean_median_mw\": 45650, \"reference_start_utc\": \"2026-11-19T01:00Z\", \"excess_vs_reference_mw\": 0}",
+      "parent": "prescribe-flexible-load"
+    }
+  ]
+}
