@@ -25,7 +25,7 @@ def main() -> int:
     store = Store(DEFAULT_DB_PATH)
     try:
         if args.cmd == "propose":
-            store.load_snapshot()
+            store.load_series()
             try:
                 result = agent.propose(store, tracing.from_env(), allow_untraced=args.allow_untraced)
             except tracing.UntracedRunError as err:

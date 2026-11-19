@@ -1,7 +1,7 @@
 """ClickHouse storage (embedded engine via chDB).
 
 Two things live here:
-- `raw_load`: the 15-minute national load series, loaded from the CSV snapshot.
+- `raw`: the frozen public series, loaded from the CSV snapshots.
 - `action_log`: an append-only event log for proposed actions. Nothing is ever
   updated in place; the status of an action is the latest event for its id.
 """
@@ -17,6 +17,13 @@ from chdb import session
 
 ROOT = Path(__file__).resolve().parent.parent
 SNAPSHOT = ROOT / "data" / "eco2mix_national_tr_snapshot.csv"
+
+# name -> (file, timestamp column, value column, readings expected per hour)
+SERIES = {
+    "fr_load": (SNAPSHOT, "date_heure", "consommation", 4),
+    "paris_bike": (ROOT / "data" / "paris_bike_sebastopol_sn_snapshot.csv", "date", "sum_counts", 1),
+}
+GRID_START, GRID_END = "2026-09-01 00:00:00", "2026-11-19 00:00:00"  # UTC, end exclusive
 DEFAULT_DB_PATH = ROOT / ".chdb"
 
 EVENTS = ("proposed", "invalid", "approved", "rejected", "executed_dry_run")
@@ -29,8 +36,9 @@ class Store:
         q = self.session.query
         q("CREATE DATABASE IF NOT EXISTS aot")
         q(
-            "CREATE TABLE IF NOT EXISTS aot.raw_load "
-            "(ts DateTime64(0, 'UTC'), mw Float64) ENGINE = MergeTree ORDER BY ts"
+            "CREATE TABLE IF NOT EXISTS aot.raw "
+            "(series LowCardinality(String), ts DateTime64(0, 'UTC'), value Float64) "
+            "ENGINE = MergeTree ORDER BY (series, ts)"
         )
         q(
             "CREATE TABLE IF NOT EXISTS aot.action_log "
@@ -43,33 +51,39 @@ class Store:
 
     # --- time series -----------------------------------------------------
 
-    def load_snapshot(self, csv_path: Path = SNAPSHOT) -> int:
-        """Idempotent load of the CSV snapshot. Returns the row count in the table."""
-        path = str(Path(csv_path).resolve()).replace("'", "\\'")
-        self.session.query("TRUNCATE TABLE aot.raw_load")
+    def load_series(self, name: str = "fr_load") -> int:
+        """Idempotent load of one frozen CSV. Returns the row count for that series."""
+        csv_path, ts_col, value_col, _ = SERIES[name]
+        path = str(csv_path.resolve()).replace("'", "\\'")
+        self.session.query(f"ALTER TABLE aot.raw DELETE WHERE series = '{name}' SETTINGS mutations_sync = 2")
         self.session.query(
-            "INSERT INTO aot.raw_load SELECT date_heure, consommation "
+            f"INSERT INTO aot.raw SELECT '{name}', {ts_col}, {value_col} "
             f"FROM file('{path}', CSVWithNames, "
-            "'date_heure DateTime64(0, ''UTC''), consommation Float64')"
+            f"'{ts_col} DateTime64(0, \'\'UTC\'\'), {value_col} Float64')"
         )
-        return int(self.session.query("SELECT count() AS n FROM aot.raw_load", "DataFrame").n[0])
+        df = self.session.query(f"SELECT count() AS n FROM aot.raw WHERE series = '{name}'", "DataFrame")
+        return int(df.n[0])
 
-    def hourly(self) -> pd.Series:
-        """Hourly mean load in MW on a gap-free UTC grid.
+    def hourly(self, name: str = "fr_load") -> pd.Series:
+        """Hourly values on a gap-free UTC grid covering the whole snapshot range.
 
-        An hour is kept only if its four quarter-hour readings are all present;
-        missing hours are emitted as NaN by `WITH FILL` rather than interpolated.
+        An hour is kept only if all its expected readings are present (4 quarter-hours
+        for the load series). Missing hours are emitted as NaN by `WITH FILL`, never
+        interpolated.
         """
+        per_hour = SERIES[name][3]
         df = self.session.query(
-            """
-            SELECT h, mw FROM (
-                SELECT toStartOfHour(ts) AS h, toNullable(avg(mw)) AS mw
-                FROM aot.raw_load GROUP BY h HAVING count() = 4
-            ) ORDER BY h WITH FILL STEP toIntervalHour(1)
+            f"""
+            SELECT h, v FROM (
+                SELECT toStartOfHour(ts) AS h, toNullable(avg(value)) AS v
+                FROM aot.raw WHERE series = '{name}' GROUP BY h HAVING count() = {per_hour}
+            ) ORDER BY h WITH FILL
+                FROM toDateTime64('{GRID_START}', 0, 'UTC') TO toDateTime64('{GRID_END}', 0, 'UTC')
+                STEP toIntervalHour(1)
             """,
             "DataFrame",
         )
-        return pd.Series(df.mw.to_numpy(dtype=float), index=pd.DatetimeIndex(df.h), name="mw")
+        return pd.Series(df.v.to_numpy(dtype=float), index=pd.DatetimeIndex(df.h), name=name)
 
     # --- action log --------------------------------------------------------
 
