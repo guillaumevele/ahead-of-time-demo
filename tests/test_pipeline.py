@@ -153,6 +153,8 @@ def test_approved_action_is_a_dry_run_with_a_verifiable_receipt(store, stub_time
     assert ok and "digest=match" in report
     assert approval.execute(store, r["id"], tmp_path).startswith("DRY RUN")
     assert list(store.events(r["id"]).event) == ["proposed", "approved", "executed_dry_run"]
+    with pytest.raises(approval.ApprovalError, match="executed_dry_run"):  # one execution per approval
+        approval.execute(store, r["id"], tmp_path)
     with pytest.raises(approval.ApprovalError):  # one decision per proposal
         approval.decide(store, r["id"], "alice", approval.confirmation_phrase(r["id"]), tmp_path)
 
