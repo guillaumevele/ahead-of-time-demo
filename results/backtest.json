@@ -1,0 +1,40 @@
+{
+  "data_sha256": "fcf9d14fd925010f2eb78ee73bc77dae3c876e36246c19aac033e63287611c80",
+  "raw_rows": 7580,
+  "hourly_points": 1896,
+  "missing_hours": 1,
+  "model": "mistralai/Timestral-123M",
+  "model_revision": "5a147287addda85f6acd8da3fb8858fe9af7e8f7",
+  "versions": {
+    "timestral": "1.0.0",
+    "torch": "2.15.0",
+    "chdb": "4.5.1"
+  },
+  "first_origin": "2026-10-16 00:00:00+00:00",
+  "last_origin": "2026-11-18 00:00:00+00:00",
+  "windows": 34,
+  "scored_hours": 815,
+  "results": {
+    "timestral": {
+      "mae_mw": 1213.926092791411,
+      "mase": 0.7216504391625328,
+      "wql": 0.016758855107352203
+    },
+    "naive_week": {
+      "mae_mw": 3939.7990797546013,
+      "mase": 2.3497238292321465,
+      "wql": 0.07698949027635622
+    },
+    "naive_day": {
+      "mae_mw": 2831.885582822086,
+      "mase": 1.6752108658868698,
+      "wql": 0.05533922495256142
+    }
+  },
+  "coverage_q10_q90": 0.750920245398773,
+  "windows_won_by_timestral": {
+    "naive_week": 31,
+    "naive_day": 30
+  },
+  "timestral_seconds_total": 77.2
+}
